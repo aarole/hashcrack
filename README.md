@@ -1,1 +1,2 @@
-# c370g9
+# Passcrack
+Automated, web-based hash cracker
