@@ -15,6 +15,7 @@
     </h4> 
       
     <?php
+		$type="asdf";
 		if(array_key_exists('crack_btn', $_POST)) {
 			if(strlen($_POST['hash']) == 0){
 				header("Refresh:0");
@@ -37,12 +38,16 @@
 			echo "</br>";
 		}
 		function id(){
-			$comm="id " . escapeshellcmd($_POST['hash']);
+			$comm="/var/www/html/id.py " . escapeshellcmd($_POST['hash']);
 			exec($comm, $id_out, $id_ret);
 			echo "<b>Detected format </b></br>".$id_out[0];
+			return $id_out[0];
 		}
 		function crack(){	
-			$comm="crack find " . escapeshellcmd($_POST['hash']);
+			echo "</br>";
+			$type = id();
+			br();
+			$comm="/var/www/html/crack.py find " . escapeshellcmd($_POST['hash']) . " $type";
 			exec($comm, $id_out, $id_ret);
 			echo "<b>Plaintext password </b></br>".$id_out[0];
 		}	
@@ -55,9 +60,6 @@
 			echo "$prov";
 			echo "</br>";
 			echo "--------------------------------------------------------------------------";
-			echo "</br>";
-			id();
-			br(); 	
 			crack();
 			echo "</br>";
 			echo "--------------------------------------------------------------------------";

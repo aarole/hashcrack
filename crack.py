@@ -6,35 +6,46 @@
 
 from hashlib import md5, sha1, sha224, sha256, sha384, sha512
 import sys
+import collections
 
-FUNC = [md5, sha1, sha224, sha256, sha384, sha512]
+FUNC = {'md5':md5, 'sha1':sha1, 'sha224':sha224, 'sha256':sha256, 'sha384':sha384, 'sha512':sha512}
 
 
-def make_table(wordlist):
-	sorted_pass = list()
+def make_table(wordlist, alg):
+	d = dict()
 	with open(wordlist, "r", encoding="utf-8") as source:
 		words = source.readlines()
 		for word in words:
-			sorted_pass.append(word.strip())
-		sorted_pass = sorted(sorted_pass)
+			word = word.strip()
+			d[FUNC[alg](word.encode("utf-8")).hexdigest()] = word
+		od = collections.OrderedDict(sorted(d.items()))
 		source.close()
-	with open("rainbow_table.txt", "a", encoding="utf-8") as sink:
-		for passwd in sorted_pass:
-			sink.write(passwd)
-			for func in FUNC:
-				sink.write(",")
-				sink.write(func(passwd.encode("utf-8")).hexdigest())
-			sink.write("\n")
+	with open(f"{alg}_table.txt", "a", encoding="utf-8") as sink:
+		for key, value in od.items():
+			sink.write(f"{key.strip()},{value.strip()}\n")
 		sink.close()
 
 
-def crack(hash: str):
+def search(needle: str, haystack: list, lb: int, ub: int) -> int:
+	if ub >= lb:
+		mp = (lb + ub) // 2
+		if haystack[mp].split(',')[0] == needle:
+			return mp
+		elif haystack[mp].split(',')[0] < needle:
+			return search(needle, haystack, mp + 1, ub)
+		else:
+			return search(needle, haystack, lb, mp - 1)
+	else:
+		return -1
+
+
+def crack(hash: str, alg: str):
 	hash = hash.strip()
-	with open("rainbow_table.txt", "r", encoding="utf-8") as source:
-		words = source.readlines()
-		for word in words:
-			if word.count(hash) > 0:
-				return word.split(",")[0]
+	with open(f"{alg.lower()}_table.txt", "r", encoding="utf-8") as source:
+		lines = source.readlines()
+		index = search(hash, lines, 0, len(lines) - 1)
+		if index >= 0:
+			return lines[index].split(',')[1].strip()
 		source.close()
 	return "Plaintext not found"
 
@@ -49,8 +60,8 @@ if __name__ == "__main__":
 			sys.exit(0)
 		else:
 			if sys.argv[1] == "make":
-				make_table(sys.argv[2])
+				make_table(sys.argv[2], sys.argv[3])
 			elif sys.argv[1] == "find":
-				print(crack(sys.argv[2]))
+				print(crack(sys.argv[2], sys.argv[3]).strip())
 			else:
 				print("Error: Invalid operation mode.")

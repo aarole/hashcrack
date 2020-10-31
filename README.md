@@ -14,6 +14,12 @@ Supported types:
 * SHA-512
 
 ## Cracking
-Once the hash is identified, the program will perform a rainbow table attack to crack the hash.
+Once the hash is identified, the program will perform a rainbow table attack to crack the hash.  
+In addition to the hash, the crack function also needs the detected algorithm as one of the inputs.
+
+### Method
+The crack function performs a binary search using the appropriate list of precomputed hashes (determined by the identification function).
 
 ## TODO
+* Implement method to keep the tables updated
+* Improve website design
