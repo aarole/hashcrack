@@ -1,0 +1,36 @@
+#header {
+	background-color: #e03a3f;
+	text-align: center;
+}
+
+a:link {
+	color: #030303;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #030303	;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: none;
+	color: aqua;
+}
+
+a:active {
+	color: #030303;
+	text-decoration: none;
+}
+
+main {
+	vertical-align: center;
+}
+
+#support {
+	padding-left: 1700px;
+}
+
+h2 {
+	display: inline;
+}
